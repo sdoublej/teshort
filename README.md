@@ -3,7 +3,7 @@ teshort is a Python class designed for item reduction (short-form development) u
 
 Key Features
 Embedding generation
-Generates embeddings for text items using SentenceTransformer (default: sentence-t5-xxl).
+Generates embeddings for text items using SentenceTransformer (default: sentence-t5-xxl, it can be changed).
 
 Optimal cluster search visualization
 Provides an elbow plot using average distances of nearest neighbors to help select an appropriate number of clusters.
@@ -18,12 +18,19 @@ Save results
 Saves the selected short form items to a CSV file.
 
 Class Structure
+
+#install
+pip install teshort
+
 python
 --
 teshort(
     file_path='result.csv',         # File path to save results
     model_name='sentence-t5-xxl'    # Transformer model to use
 )
+
+df = your_df (sample is on)
+
 --
 
 Main Methods

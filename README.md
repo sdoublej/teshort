@@ -31,8 +31,10 @@ Otherwise, the embedding and clustering process may fail.
 ```python
 model = teshort.teshort(file_path = 'result.csv', model_name='sentence-t5-xxl')
 ```
+
 🔄  The file_path parameter is the path to your item file (usually a .csv file) that contains the full set of items to be reduced.
 🔄  The model_name specifies the pretrained sentence embedding model to be used for transforming items into semantic vectors (ex: sentence-t5-xxl, xl, aall-MiniLM-L6-v2.)  
+
 ---
 # First_step. Embedding
 ```python

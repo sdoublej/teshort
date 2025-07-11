@@ -1,7 +1,9 @@
 
 # teshort
 --
+
 'teshort' is a Python class designed for item reduction (short-form development) using transformer-based embeddings and reduction, KMeans clustering. It helps generate semantically representative short forms of psychological or survey items by selecting items closest to cluster centroids.
+
 ---
 🚩 Why is this important?
 teshort is a Python tool for reducing questionnaire items without any response data. While traditional methods rely on large-scale data, teshort selects key items based only on semantic meaning using transformer-based language models.

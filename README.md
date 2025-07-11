@@ -1,89 +1,104 @@
-teshort
-teshort is a Python class designed for item reduction (short-form development) using transformer-based embeddings and KMeans clustering. It helps generate semantically representative short forms of psychological or survey items by selecting items closest to cluster centroids.
 
-Key Features
-Embedding generation
-Generates embeddings for text items using SentenceTransformer (default: sentence-t5-xxl).
-
-Optimal cluster search visualization
-Provides an elbow plot using average distances of nearest neighbors to help select an appropriate number of clusters.
-
-Clustering
-Performs KMeans clustering to group items based on semantic similarity.
-
-Short form selection
-Selects a specified number of items, choosing those closest to the cluster centroids from each cluster.
-
-Save results
-Saves the selected short form items to a CSV file.
-
-Class Structure
-python
+# teshort
 --
-teshort(
-    file_path='result.csv',         # File path to save results
-    model_name='sentence-t5-xxl'    # Transformer model to use
-)
---
+'teshort' is a Python class designed for item reduction (short-form development) using transformer-based embeddings and reduction, KMeans clustering. It helps generate semantically representative short forms of psychological or survey items by selecting items closest to cluster centroids.
+---
+🚩 Why is this important?
+teshort is a Python tool for reducing questionnaire items without any response data. While traditional methods rely on large-scale data, teshort selects key items based only on semantic meaning using transformer-based language models.
 
-Main Methods
-Method	Description
-embedding(df)	Generates and stores embeddings from the first column of a DataFrame.
-find_nclustes()	Plots an elbow chart to assist in determining the optimal number of clusters.
-cluster_only(n_clusters)	Performs KMeans clustering and returns DataFrame with cluster labels.
-short(n_clusters, n_items)	Selects a specified number of items (closest to centroids) to create a short form.
-sav()	Saves the selected short form items to a CSV file specified by file_path.
-
-Input Data Requirements
-The DataFrame passed to embedding(df) and short() must:
-
-Have the first column containing the text items to be embedded.
-
-Have a proper index to uniquely identify each item (item number, ID, etc.).
-
-Example Usage
-python
-from teshort_module import teshort  # Assuming you saved it as teshort.py
-
-# Initialize class
-model = teshort(file_path='short_form.csv')
-
-# Load data
+---
+# How to Use
+### install
+```python
+pip install teshort
+```    
+### import
+```python
+from teshort import teshort
 import pandas as pd
-df = pd.read_csv('items.csv', index_col=0)
-
-# Generate embeddings
+import numpy as np
+```    
+### load df
+```python
+df = pd.read_csv('Your file path/sample_filesample_file/full_50_items_positive_form_sample.csv', index_col = 0)
+``` 
+⚠️ Note: Your file must follow the same format as the sample file.
+The column containing the item texts must be in the first column
+Otherwise, the embedding and clustering process may fail.
+### model
+```python
+model = teshort.teshort(file_path = 'result.csv', model_name='sentence-t5-xxl')
+```
+🔄  The file_path parameter is the path to your item file (usually a .csv file) that contains the full set of items to be reduced.
+🔄  The model_name specifies the pretrained sentence embedding model to be used for transforming items into semantic vectors (ex: sentence-t5-xxl, xl, aall-MiniLM-L6-v2.)  
+---
+# First_step. Embedding
+```python
 model.embedding(df)
+```
+if you want to see the results of embedding, try 'model.ebeddings'
 
-# Visualize optimal cluster number
-model.find_nclustes()
+---
+# Second_step. Reduction
+```python
+model.reduction( n_components = 32,  metric='cosine', random_state=42 )
+```
+### 🔧 Parameters
+- n_components: Number of dimensions to reduce to (default: 32)
 
-# Perform clustering (e.g., 5 clusters)
-clustered_df = model.cluster_only(n_clusters=5)
+- metric: Distance metric used (e.g., 'cosine', 'euclidean')
 
-# Select short form items (e.g., total 15 items across 5 clusters)
-short_df = model.short(n_clusters=5, n_items=15)
+- random_state: Set a seed for reproducibility (important for consistent clustering results)
+- 
+⭐ This step uses UMAP internally. Dimensionality reduction helps group semantically similar items more clearly.
 
-# Save short form to file
+---
+# Third_step. cluster
+Now, get cluster
+```python
+
+clusterd_df = model.cluster( n_clusters = cluster number what you want )
+clusterd_df
+```
+🔍 Not sure how many clusters to choose? do 'model.find_nclusters()'
+📊 This will generate a visualization (e.g., silhouette scores) to help you decide the optimal number of clusters.
+---
+# Final! make shortForm
+```ptyhon
+selected_df = model.short(n_items = number_what you want)
+selected_df
+```
+📌 Notes
+- Items are selected to best represent each semantic cluster.
+
+- n_items can be any number ≤ total number of items.
+** but may differ slightly because items are selected per cluster
+---
+💾 Save Selected Items
+You can save the selected short-form items to the same file path you initially provided.
+```python
 model.sav()
-Notes
-Be sure to call embedding(df) before using cluster_only() or short().
-
-find_nclustes() only visualizes average distance trends; it does not automatically select the cluster number.
-
-The short() method distributes selected items approximately evenly across clusters.
-
-Dependencies
-Install required packages:
-
-pip install sentence-transformers scikit-learn matplotlib pandas numpy
-License
-This code is provided for research and educational purposes. Commercial use requires permission from the author.
-If you'd like, I can generate this as a properly formatted .md file or add badges (e.g., Python version, license) at the top. Let me know!
+```
+This will save selected_df as a CSV file to the path specified in file_path.
+It overwrites the original file, so make sure to back up if needed.
 
 
---
-Sample Data
-Data used in previous studies has been collected and organized separately; you may check and review them if needed.
 
-Sample data is provided for your convenience. We recommend using the 50positive dataset in particular, as it is suitable for generating text embeddings.
+
+----
+# 🎯 Summary
+teshort allows you to reduce psychological or questionnaire items without response data, using transformer-based semantic embeddings.
+It may be enable theory-driven short form development that is fast, efficient, and scalable.
+
+---
+### Q. Do I need a high-end GPU?
+
+Not necessarily.
+
+While the default model (`sentence-t5-xxl`) is large, `teshort` uses it **only for embedding** (not training).  
+This makes it runnable on most **home computers**, even without a GPU.
+
+> ✅ If your system struggles, try:  
+> - A lighter model like `'intfloat/e5-base'`  
+> - **Google Colab** (tested: works fine for free on google.colab)
+---
